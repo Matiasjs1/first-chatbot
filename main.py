@@ -1,6 +1,6 @@
 import groq as gr
 import streamlit as st
-st.set_page_config("MI CHAT BOX")
+st.set_page_config("MI CHAT BOT")
 MODELOS = ['llama3-8b-8192', 'llama3-70b-8192', 'mixtral-8x7b-32768']
 
 def configurar_pagina():
