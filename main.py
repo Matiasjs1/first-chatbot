@@ -2,7 +2,9 @@ import groq as gr
 import streamlit as st
 st.set_page_config("MI CHAT BOT")
 
-FALLBACK = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'gemma2-9b-it']
+# Modelos disponibles para una API key de plan Developer en Groq (2026).
+# Llama 3.1/3.3 pasaron a Enterprise (404 en dev) y gemma/mixtral/llama3 fueron decommissioned.
+MODELOS = ['openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'qwen/qwen3.6-27b']
 
 
 def crear_usuario():
@@ -10,29 +12,13 @@ def crear_usuario():
     return gr.Groq(api_key=clave_secreta)
 
 
-def obtener_modelos(cliente):
-    """Trae los IDs de modelos reales disponibles para esta key desde la API de Groq."""
-    try:
-        modelos = []
-        for m in cliente.models.list():
-            mid = m.id
-            if any(x in mid.lower() for x in ('whisper', 'tts', 'eleven', 'playai', 'guard')):
-                continue
-            modelos.append(mid)
-        if modelos:
-            return modelos
-    except Exception:
-        pass
-    return FALLBACK
-
-
-def configurar_pagina(modelos):
+def configurar_pagina():
     st.title("Mi chat IA")
     nombre = st.text_input("¿Cuál es tu nombre? ")
     if st.button("Saludar"):
         st.write(f"Hola {nombre}")
     st.sidebar.title("Configuración modelos")
-    modelo_elegido = st.sidebar.selectbox("Modelos", modelos, index=0)
+    modelo_elegido = st.sidebar.selectbox("Modelos", MODELOS, index=0)
     return modelo_elegido
 
 
@@ -72,9 +58,8 @@ def generar_respuesta(respuesta_ia):
 
 def main():
     usuario_groq = crear_usuario()
-    modelos = obtener_modelos(usuario_groq)
     inicializar_estado()
-    modelo_actual = configurar_pagina(modelos)
+    modelo_actual = configurar_pagina()
     area_chat()
     mensaje_usuario = st.chat_input("Ingrese su prompt")
 
